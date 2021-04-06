@@ -15,28 +15,21 @@ let names = [
 client.login(process.env.TOKEN);
 client.on("message", entered);
 
-async function entered(message){
+function entered(message){
      let command = message.content.substring(0, 5);
      let name = message.content.substring(6);
      if(command != "?rank") return;
 
-     let player = await getRank(name);
-
-     message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + "LP");
-
-}
-
-async function updateRanks(){
-
-     let player = await getRank("verdilet");
-     console.log(player.tier);
-
-     sleep(5000);
+     getRank(name)
+          .then(player => message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + "LP"))
+          .catch(() => message.channel.send("that shit aint workin"));
 
 }
 
 async function getRank(name){
+
      let urlName = name.replace(/ /g, "%20");
+
      const summonerIdLink = `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${urlName}?api_key=${riotKey}`;
 
      let reponse = await fetch(summonerIdLink);
@@ -51,9 +44,7 @@ async function getRank(name){
      let rank = data[0].rank;
      let lp = data[0].leaguePoints;
 
-
      return {tier, rank, lp};
-
 }
 
 function sleep(miliseconds) {
