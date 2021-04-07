@@ -1,4 +1,3 @@
-require("dotenv").config();
 const fetch = require("node-fetch");
 const discord = require("discord.js");
 const client = new discord.Client();
@@ -12,7 +11,7 @@ let names = [
      "redtide"
 ];
 
-client.login(process.env.TOKEN);
+client.login(`${DISCORD_TOKEN}`);
 client.on("message", entered);
 
 function entered(message){
