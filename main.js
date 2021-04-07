@@ -1,17 +1,13 @@
+//Requirements
 const fetch = require("node-fetch");
 const discord = require("discord.js");
 const client = new discord.Client();
-const riotKey = "RGAPI-ff870cd5-cddd-4e92-a027-ae763bfcaedb";
-var message;
 
-//String of names
-let names = [
-     "verdilet",
-     "samar",
-     "redtide"
-];
+//Environment variables
+const DISCORD_TOKEN = "ODI3OTk4NjE5MDg4MTkxNDg4.YGjLzg.rSlC5_s0GgPLcyRWSHRhFTtB2L4";
+const RIOT_KEY = "RGAPI-ff870cd5-cddd-4e92-a027-ae763bfcaedb";
 
-client.login(`${DISCORD_TOKEN}`);
+client.login(DISCORD_TOKEN);
 client.on("message", entered);
 
 function entered(message){
@@ -29,12 +25,12 @@ async function getRank(name){
 
      let urlName = name.replace(/ /g, "%20");
 
-     const summonerIdLink = `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${urlName}?api_key=${riotKey}`;
+     const summonerIdLink = `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${urlName}?api_key=${RIOT_KEY}`;
 
      let reponse = await fetch(summonerIdLink);
      let data = await reponse.json();
 
-     const playerLink = "https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + data.id + "?api_key=" + riotKey;
+     const playerLink = "https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + data.id + "?api_key=" + RIOT_KEY;
 
      response = await fetch(playerLink);
      data = await response.json();
