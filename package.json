@@ -2,9 +2,7 @@
   "name": "discordbot",
   "version": "1.0.0",
   "description": "",
-  "scripts": {
-    "start": "main.js"
-  },
+  "main": "main.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
