@@ -1,4 +1,5 @@
 //Requirements
+require("dotenv").config();
 const fetch = require("node-fetch");
 const discord = require("discord.js");
 const client = new discord.Client();
