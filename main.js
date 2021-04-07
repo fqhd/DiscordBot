@@ -4,12 +4,14 @@ const discord = require("discord.js");
 const client = new discord.Client();
 
 //Environment variables
-const DISCORD_TOKEN = "ODI3OTk4NjE5MDg4MTkxNDg4.YGjLzg.rSlC5_s0GgPLcyRWSHRhFTtB2L4";
-const RIOT_KEY = "RGAPI-ff870cd5-cddd-4e92-a027-ae763bfcaedb";
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+const RIOT_KEY = process.env.RIOT_KEY;
 
+//Main Script
 client.login(DISCORD_TOKEN);
 client.on("message", entered);
 
+//Functions
 function entered(message){
      let command = message.content.substring(0, 5);
      let name = message.content.substring(6);
