@@ -26,27 +26,28 @@ function entered(message){
 
 async function getRank(name){
 
+     //Getting the data of the account
      let urlName = name.replace(/ /g, "%20");
-
      const summonerIdLink = `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${urlName}?api_key=${RIOT_KEY}`;
-
      let reponse = await fetch(summonerIdLink);
      let data = await reponse.json();
 
+     //Getting the data of the summoner and their ranks/stats
      const playerLink = "https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + data.id + "?api_key=" + RIOT_KEY;
-
      response = await fetch(playerLink);
      data = await response.json();
 
+     let tier = data[0].tier.toLowerCase();
+     let rank = data[0].rank;
+     let lp = data[0].leaguePoints;
+
      for(let i = 0; i < data.length; i++){
           if(data[i].queueType == "RANKED_SOLO_5x5"){
-               var tier = data[i].tier.toLowerCase();
-               var rank = data[i].rank;
-               var lp = data[i].leaguePoints;
+               tier = data[i].tier.toLowerCase();
+               rank = data[i].rank;
+               lp = data[i].leaguePoints;
           }
      }
-
-
 
      return {tier, rank, lp};
 }
