@@ -38,6 +38,8 @@ async function getRank(name){
      response = await fetch(playerLink);
      data = await response.json();
 
+     console.log(data);
+
      let tier = data[0].tier.toLowerCase();
      let rank = data[0].rank;
      let lp = data[0].leaguePoints;
@@ -46,8 +48,8 @@ async function getRank(name){
 }
 
 function sleep(miliseconds) {
-   var currentTime = new Date().getTime();
+     var currentTime = new Date().getTime();
 
-   while (currentTime + miliseconds >= new Date().getTime()) {
-   }
+     while (currentTime + miliseconds >= new Date().getTime()) {
+     }
 }
