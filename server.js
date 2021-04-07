@@ -38,11 +38,15 @@ async function getRank(name){
      response = await fetch(playerLink);
      data = await response.json();
 
-     console.log(data);
+     for(let i = 0; i < data.length; i++){
+          if(data[i].queueType == "RANKED_SOLO_5x5"){
+               var tier = data[0].tier.toLowerCase();
+               var rank = data[0].rank;
+               var lp = data[0].leaguePoints;
+          }
+     }
 
-     let tier = data[0].tier.toLowerCase();
-     let rank = data[0].rank;
-     let lp = data[0].leaguePoints;
+
 
      return {tier, rank, lp};
 }
