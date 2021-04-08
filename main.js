@@ -29,7 +29,7 @@ async function getRank(name){
      const summonerIdLink = `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${urlName}?api_key=${RIOT_KEY}`;
      fetch(summonerIdLink)
           .then(response => response.json())
-          .then(json => {
+          .then(data => {
                const playerLink = "https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + data.id + "?api_key=" + RIOT_KEY;
                return fetch(playerLink);
           })
