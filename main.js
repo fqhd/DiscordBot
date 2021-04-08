@@ -10,10 +10,10 @@ const RIOT_KEY = process.env.RIOT_KEY;
 
 //Main Script
 client.login(DISCORD_TOKEN);
-client.on("message", entered);
+client.on("message", onMessageEnter);
 
 //Functions
-function entered(message){
+function onMessageEnter(message){
      let command = message.content.substring(0, 5);
      let name = message.content.substring(6);
      if(command != "?rank") return;
@@ -37,6 +37,9 @@ function getRank(name){
                })
                .then(response => response.json())
                .then(data => {
+                    if(isNaN(data.length)){
+                         reject();
+                    }
                     for(let i = 0; i < data.length; i++){
                          if(data[i].queueType == "RANKED_SOLO_5x5"){
                               let tier = data[i].tier.toLowerCase();
@@ -45,7 +48,6 @@ function getRank(name){
                               resolve({tier, rank, lp});
                          }
                     }
-               }).catch(err => reject());
+               }).catch(() => reject());
      });
-
 }
