@@ -35,6 +35,7 @@ async function getRank(name){
           })
           .then(response => response.json())
           .then(data => {
+               console.log(data);
                for(let i = 0; i < data.length; i++){
                     if(data[i].queueType == "RANKED_SOLO_5x5"){
                          let tier = data[i].tier.toLowerCase();
