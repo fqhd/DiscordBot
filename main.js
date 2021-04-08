@@ -19,30 +19,33 @@ function entered(message){
      if(command != "?rank") return;
 
      getRank(name)
-          .then(player => message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + "LP"))
+          .then(player => message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + " lp"))
           .catch(() => message.channel.send("that shit aint workin"));
 
 }
 
-async function getRank(name){
-     let urlName = name.replace(/ /g, "%20");
-     const summonerIdLink = `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${urlName}?api_key=${RIOT_KEY}`;
-     fetch(summonerIdLink)
-          .then(response => response.json())
-          .then(data => {
-               const playerLink = "https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + data.id + "?api_key=" + RIOT_KEY;
-               return fetch(playerLink);
-          })
-          .then(response => response.json())
-          .then(data => {
-               console.log(data);
-               for(let i = 0; i < data.length; i++){
-                    if(data[i].queueType == "RANKED_SOLO_5x5"){
-                         let tier = data[i].tier.toLowerCase();
-                         let rank = data[i].rank;
-                         let lp = data[i].leaguePoints;
-                         return {tier, rank, lp};
+function getRank(name){
+     return new Promise((resolve, reject) => {
+          let urlName = name.replace(/ /g, "%20");
+          const summonerIdLink = `https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${urlName}?api_key=${RIOT_KEY}`;
+
+          fetch(summonerIdLink)
+               .then(response => response.json())
+               .then(data => {
+                    const playerLink = "https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + data.id + "?api_key=" + RIOT_KEY;
+                    return fetch(playerLink);
+               })
+               .then(response => response.json())
+               .then(data => {
+                    for(let i = 0; i < data.length; i++){
+                         if(data[i].queueType == "RANKED_SOLO_5x5"){
+                              let tier = data[i].tier.toLowerCase();
+                              let rank = data[i].rank;
+                              let lp = data[i].leaguePoints;
+                              resolve({tier, rank, lp});
+                         }
                     }
-               }
-          }).catch(err => console.log(err));
+               }).catch(err => reject());
+     });
+
 }
