@@ -34,7 +34,7 @@ async function getRank(name){
                return fetch(playerLink);
           })
           .then(response => response.json())
-          .then(json => {
+          .then(data => {
                for(let i = 0; i < data.length; i++){
                     if(data[i].queueType == "RANKED_SOLO_5x5"){
                          let tier = data[i].tier.toLowerCase();
