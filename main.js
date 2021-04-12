@@ -1,8 +1,8 @@
 //Requirements
 require("dotenv").config();
 const fetch = require("node-fetch");
-const discord = require("discord.js");
-const client = new discord.Client();
+const Discord = require("discord.js");
+const client = new Discord.Client();
 
 //Environment variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
