@@ -35,12 +35,12 @@ async function main(){
                let player = await getRank(usernames[i]);
                leaderboard += (i + 1) + ") " + names[i] + ": " + player.tier + " " + player.rank + " " + player.lp + " LP";
                leaderboard += "\n";
-               sleep(200);
+               sleep(1000);
           }
 
           //Updating the discord leaderboard message
           await message.edit(leaderboard);
-          sleep(300000);
+          sleep(3600000);
      }
 }
 
