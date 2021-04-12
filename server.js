@@ -1,5 +1,6 @@
 //Requirements
 require("dotenv").config();
+const express = require("express");
 const fetch = require("node-fetch");
 const Discord = require("discord.js");
 const client = new Discord.Client();
@@ -7,11 +8,15 @@ const client = new Discord.Client();
 //Environment variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const RIOT_KEY = process.env.RIOT_KEY;
+const PORT = process.env.PORT || 3000;
 
 //Main Script
+const app = express();
+app.listen(process.env.PORT, () => console.log("Starting server on port: " + PORT));
 client.login(DISCORD_TOKEN);
 client.on("ready", main);
 client.on("message", onMessageEnter);
+
 
 let names = ["Fahd", "Amine", "Omar", "Mehdi", "Samar", "Yahia", "Sarah", "Axed", "Imane", "Jihwan"];
 let usernames = ["9JlZKTcvMO_XU2IBV-uvTyg65cN7Oghn0BrLP2JCS-SdQiq9", "kmIMD61kpFj__vdcmkFmWRTO3Y4iTcdo8v9RM8wT5r3oarmV", "sZSQ7WVlb8PjS1DVSLp8-qaQ15b2-yjWPrGWXJcRSzEBmPF4", "OYzdKBrBZlppkK0z7QAPUHV7Bz1znrLhD2k_Im4eTYFNdFuB", "GQG72tn5Ap1mrhn-LOqj6LyE56iCbIMeji9qTDCxqJ_Z2SUb", "001gvTdfRTfrToRzGEk-sr4M1p1u70A4cTR1zhTIwNn8QdVD", "FI5IP0jcSLuwHxaSZH-dJSNRLC2m65VurjA-LB57Pg8W1-wU", "3D_wRaLbvZS19lw8GD38C-X2VzGPnU8TaWWJmkWlNPlPaNaQ", "kpDMq3qrUAZkPy3IVd-s2urPQyKsIHZot_MF8qeQJznatFr7", "w6-mWOTSRvKTQyKyDVefKcyZgEQEiaGYIGDkBNRhWpu9d2OS"];
@@ -37,7 +42,6 @@ async function main(){
           await message.edit(leaderboard);
           sleep(300000);
      }
-
 }
 
 async function onMessageEnter(message){
