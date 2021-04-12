@@ -10,7 +10,7 @@ const RIOT_KEY = process.env.RIOT_KEY;
 
 //Main Script
 client.login(DISCORD_TOKEN);
-client.on("ready", main);
+//client.on("ready", main);
 client.on("message", onMessageEnter);
 
 let names = ["Fahd", "Amine", "Omar", "Mehdi", "Samar", "Yahia", "Sarah", "Axed", "Imane", "Jihwan"];
@@ -40,19 +40,19 @@ async function main(){
 
 }
 
-function onMessageEnter(message){
+async function onMessageEnter(message){
      let command = message.content.substring(0, 5);
      let name = message.content.substring(6);
      if(command == "?rank"){
           let urlName = name.replace(/ /g, "%20");
           const summonerIdLink = "https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + urlName + "?api_key=" + RIOT_KEY;
-          let reponse = await fetch(summonerIdLink);
+          let response = await fetch(summonerIdLink);
           let json = await response.json();
           let player = await getRank(json.id);
           if(player == null){
-               message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + " LP");
-          }else{
                message.channel.send("That shit aint workin");
+          }else{
+               message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + " LP");
           }
      }
 
