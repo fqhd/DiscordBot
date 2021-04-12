@@ -10,7 +10,7 @@ const RIOT_KEY = process.env.RIOT_KEY;
 
 //Main Script
 client.login(DISCORD_TOKEN);
-//client.on("ready", main);
+client.on("ready", main);
 client.on("message", onMessageEnter);
 
 let names = ["Fahd", "Amine", "Omar", "Mehdi", "Samar", "Yahia", "Sarah", "Axed", "Imane", "Jihwan"];
