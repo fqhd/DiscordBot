@@ -18,10 +18,6 @@ const app = express();
 app.listen(process.env.PORT, () => console.log("Starting server on port: " + PORT));
 client.login(DISCORD_TOKEN);
 client.on("ready", main);
-client.on("message", onMessageEnter);
-while(true){
-     
-}
 
 async function main(){
      const channel = await client.channels.fetch("831148754181816351");
@@ -43,24 +39,6 @@ async function main(){
           await message.edit(leaderboard);
           console.log("Updated Leaderboard");
           sleep(300000);
-     }
-
-}
-
-async function onMessageEnter(message){
-     let command = message.content.substring(0, 5);
-     let name = message.content.substring(6);
-     if(command == "?rank"){
-          let urlName = name.replace(/ /g, "%20");
-          const summonerIdLink = "https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + urlName + "?api_key=" + RIOT_KEY;
-          let response = await fetch(summonerIdLink);
-          let json = await response.json();
-          let player = await getRank(json.id);
-          if(player == null){
-               message.channel.send("That shit aint workin");
-          }else{
-               message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + " LP");
-          }
      }
 
 }
