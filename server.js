@@ -40,7 +40,7 @@ async function main(){
 
           //Updating the discord leaderboard message
           await message.edit(leaderboard);
-          sleep(300000);
+          sleep(600000);
           console.log("Updated Leaderboard");
      }
 
