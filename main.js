@@ -19,7 +19,9 @@ app.listen(process.env.PORT, () => console.log("Starting server on port: " + POR
 client.login(DISCORD_TOKEN);
 client.on("ready", main);
 client.on("message", onMessageEnter);
-
+while(true){
+     
+}
 
 async function main(){
      const channel = await client.channels.fetch("831148754181816351");
@@ -28,7 +30,6 @@ async function main(){
      let leaderboard = "";
      while(true){
           //Creating the ranks
-          sleep(600000);
           leaderboard = "";
           leaderboard += "The month of April just started!! Good Luck on your ranked games!! \n Lets announce the Leaderboards!!\n\n";
           for(let i = 0; i < names.length; i++){
@@ -41,6 +42,7 @@ async function main(){
           //Updating the discord leaderboard message
           await message.edit(leaderboard);
           console.log("Updated Leaderboard");
+          sleep(300000);
      }
 
 }
