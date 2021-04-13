@@ -27,6 +27,7 @@ async function main(){
      let leaderboard = "";
      while(true){
           leaderboard = "";
+          leaderboardArray = [];
           leaderboard += "Happy Ramadan!! Good Luck on your ranked games!! \nLet's announce the Leaderboards!!\n\n";
 
           // Adding ranks to leaderboard
