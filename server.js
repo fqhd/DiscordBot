@@ -15,7 +15,7 @@ const app = express();
 app.listen(process.env.PORT, () => console.log("Starting server on port: " + PORT));
 client.login(DISCORD_TOKEN);
 client.on("ready", main);
-client.on("message", onMessageEnter);
+// client.on("message", onMessageEnter);
 
 
 let names = ["Fahd", "Amine", "Omar", "Mehdi", "Samar", "Yahia", "Sarah", "Axed", "Imane", "Jihwan"];
@@ -40,29 +40,29 @@ async function main(){
 
           //Updating the discord leaderboard message
           await message.edit(leaderboard);
-          sleep(600000);
+          sleep(300000);
           console.log("Updated Leaderboard");
      }
 
 }
 
-async function onMessageEnter(message){
-     let command = message.content.substring(0, 5);
-     let name = message.content.substring(6);
-     if(command == "?rank"){
-          let urlName = name.replace(/ /g, "%20");
-          const summonerIdLink = "https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + urlName + "?api_key=" + RIOT_KEY;
-          let response = await fetch(summonerIdLink);
-          let json = await response.json();
-          let player = await getRank(json.id);
-          if(player == null){
-               message.channel.send("That shit aint workin");
-          }else{
-               message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + " LP");
-          }
-     }
-
-}
+// async function onMessageEnter(message){
+//      let command = message.content.substring(0, 5);
+//      let name = message.content.substring(6);
+//      if(command == "?rank"){
+//           let urlName = name.replace(/ /g, "%20");
+//           const summonerIdLink = "https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + urlName + "?api_key=" + RIOT_KEY;
+//           let response = await fetch(summonerIdLink);
+//           let json = await response.json();
+//           let player = await getRank(json.id);
+//           if(player == null){
+//                message.channel.send("That shit aint workin");
+//           }else{
+//                message.channel.send(name + " is " + player.tier + " " + player.rank + " with " + player.lp + " LP");
+//           }
+//      }
+//
+// }
 
 async function getRank(puuid){
      let playerData;
