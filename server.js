@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.listen(process.env.PORT, () => console.log("Starting server on port: " + PORT));
 client.login(DISCORD_TOKEN);
-//client.on("ready", main);
+client.on("ready", main);
 client.on("message", onMessageEnter);
 
 
@@ -41,7 +41,9 @@ async function main(){
           //Updating the discord leaderboard message
           await message.edit(leaderboard);
           sleep(600000);
+          console.log("Updated Leaderboard");
      }
+
 }
 
 async function onMessageEnter(message){
