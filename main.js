@@ -57,6 +57,10 @@ async function main(){
           const hours = date.getHours();
           const minutes = date.getMinutes();
 
+          if(parseInt(minutes) < 10){
+               minutes = "0" + minutes;
+          }
+
           leaderboard += `Next Update: ${day}/${month}/${year} ${hours}:${minutes} UTC`;
 
 
