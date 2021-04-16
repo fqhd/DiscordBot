@@ -50,15 +50,14 @@ async function main(){
           //Adding date and time to leaderboard
           leaderboard += "\n";
 
-          let date = new Date();
-          let day = date.getDate();
-          let month = date.getMonth();
-          let year = date.getFullYear();
+          const date =  new Date(new Date().getTime() + 5 * 60000);
+          const day = date.getDate();
+          const month = date.getMonth();
+          const year = date.getFullYear();
+          const hours = date.getHours();
+          const minutes = date.getMinutes();
 
-          let hours = date.getHours();
-          let minutes = date.getMinutes();
-
-          leaderboard += "Next Update: " + day + "/" + month + "/" + year + " " + hours + ":" + (minutes+5) + " UTC";
+          leaderboard += `Next Update: ${day}/${month}/${year} ${hours}:${minutes} UTC`;
 
 
           //Updating the discord leaderboard message
