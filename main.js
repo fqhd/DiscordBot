@@ -23,7 +23,7 @@ client.on("ready", main);
 async function main(){
      const channel = await client.channels.fetch("831148754181816351");
      let message = await channel.messages.fetch("831189816040357898");
-	channel.messages.send("@league of negative KDA OMG WA LOOOL GUYS AMINE IS ABOUT TO DEMOTE WAHAHHAHHA BOTH OF HIS ACCS ARE AT 0 LP\n");
+	channel.send("@league of negative KDA OMG WA LOOOL GUYS AMINE IS ABOUT TO DEMOTE WAHAHHAHHA BOTH OF HIS ACCS ARE AT 0 LP\n");
 
      let leaderboard = "";
      while(true){
