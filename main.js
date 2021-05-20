@@ -23,13 +23,12 @@ client.on("ready", main);
 async function main(){
      const channel = await client.channels.fetch("831148754181816351");
      let message = await channel.messages.fetch("831189816040357898");
-	channel.send("@league of negative KDA OMG WA LOOOL GUYS AMINE IS ABOUT TO DEMOTE WAHAHHAHHA BOTH OF HIS ACCS ARE AT 0 LP\n");
 
      let leaderboard = "";
      while(true){
           leaderboard = "";
           leaderboardArray = [];
-          leaderboard += "Okay Guys don't worry I'll make sure to @ you once he demotes lol im hype af\n\n";
+          leaderboard += "OMG WA LOOOL GUYS AMINE IS ABOUT TO DEMOTE WAHAHHAHHA BOTH OF HIS ACCS ARE AT 0 LP\nOkay Guys don't worry I'll make sure to @ you once he demotes lol im hype af\n\n";
 
           // Adding ranks to leaderboard
           for(let i = 0; i < names.length; i++){
