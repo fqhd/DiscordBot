@@ -28,7 +28,7 @@ async function main(){
      while(true){
           leaderboard = "";
           leaderboardArray = [];
-          leaderboard += "Congratulations to everyone for ranking up. Summer just started, we all got no live so I don't expect anyone to be travelin... That said, Goodluck and Have fun on the rift!! :)\n\n";
+          leaderboard += "Congratulations to everyone for ranking up. Summer just started, we all got no life so I don't expect anyone to be travelin... That said, Goodluck and Have fun on the rift!! :)\n\n";
 
           // Adding ranks to leaderboard
           for(let i = 0; i < names.length; i++){
