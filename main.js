@@ -28,7 +28,7 @@ async function main(){
      while(true){
           leaderboard = "";
           leaderboardArray = [];
-          leaderboard += "OMG WA LOOOL GUYS AMINE IS ABOUT TO DEMOTE WAHAHHAHHA BOTH OF HIS ACCS ARE AT 0 LP\nOkay Guys don't worry I'll make sure to @ you once he demotes lol im hype af\n\n";
+          leaderboard += "Congratulations to everyone for ranking up. Summer just started, we all got no live so I don't expect anyone to be travelin... That said, Goodluck and Have fun on the rift!! :)\n\n";
 
           // Adding ranks to leaderboard
           for(let i = 0; i < names.length; i++){
