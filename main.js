@@ -13,7 +13,7 @@ let leaderboardArray = [];
 
 // Main Script
 const app = express();
-app.listen(process.env.PORT, () => console.log("Starting server on port: " + PORT));
+app.listen(process.env.PORT, () => console.log("Starting server on port: " + process.env.PORT));
 client.login(process.env.DISCORD_TOKEN);
 client.on("ready", main);
 client.on("message", messageEvent);
