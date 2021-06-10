@@ -25,8 +25,6 @@ function messageEvent(msg) {
 		}).catch(() => {
 			msg.channel.send("Invalid API Key Provided");
 		});
-	}else if(msg.content === "&stop"){
-		client.destroy();
 	}
 }
 
@@ -42,7 +40,7 @@ async function main() {
 
 		// Adding ranks to leaderboard
 		for(let i = 0; i < names.length; i++){
-			let player = await getRank(usernames[i]).catch();
+			let player = await getRank(usernames[i]).catch(function(){});
 			if(typeof player == "undefined"){
 				i = -1;
 				sleep(5000);
