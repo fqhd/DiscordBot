@@ -1,13 +1,24 @@
 {
   "name": "discordbot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A discord bot that handles riot games updating leaderboard",
+  "main": "main.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fqhd/DiscordBot.git"
+  },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fqhd/DiscordBot/issues"
+  },
+  "homepage": "https://github.com/fqhd/DiscordBot#readme",
   "dependencies": {
     "discord.js": "^12.5.3",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "dotenv": "^10.0.0",
     "node-fetch": "^2.6.1"
   }
 }
