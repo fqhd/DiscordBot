@@ -1,5 +1,6 @@
 //Requirements
 require("dotenv").config();
+const express = require("express");
 const fetch = require("node-fetch");
 const Discord = require("discord.js");
 const client = new Discord.Client();
@@ -11,6 +12,8 @@ let usernames = ["9JlZKTcvMO_XU2IBV-uvTyg65cN7Oghn0BrLP2JCS-SdQiq9", "kmIMD61kpF
 let leaderboardArray = [];
 
 // Main Script
+const app = express();
+app.listen(process.env.PORT, () => console.log("Starting server on port: " + PORT));
 client.login(process.env.DISCORD_TOKEN);
 client.on("ready", main);
 client.on("message", messageEvent);
