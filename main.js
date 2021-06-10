@@ -10,15 +10,13 @@ let names = ["Fahd", "Amine", "Omar", "Mehdi", "Samar", "Yahia", "Sarah", "Axed"
 let usernames = ["9JlZKTcvMO_XU2IBV-uvTyg65cN7Oghn0BrLP2JCS-SdQiq9", "kmIMD61kpFj__vdcmkFmWRTO3Y4iTcdo8v9RM8wT5r3oarmV", "sZSQ7WVlb8PjS1DVSLp8-qaQ15b2-yjWPrGWXJcRSzEBmPF4", "OYzdKBrBZlppkK0z7QAPUHV7Bz1znrLhD2k_Im4eTYFNdFuB", "GQG72tn5Ap1mrhn-LOqj6LyE56iCbIMeji9qTDCxqJ_Z2SUb", "001gvTdfRTfrToRzGEk-sr4M1p1u70A4cTR1zhTIwNn8QdVD", "FI5IP0jcSLuwHxaSZH-dJSNRLC2m65VurjA-LB57Pg8W1-wU", "3D_wRaLbvZS19lw8GD38C-X2VzGPnU8TaWWJmkWlNPlPaNaQ", "kpDMq3qrUAZkPy3IVd-s2urPQyKsIHZot_MF8qeQJznatFr7", "w6-mWOTSRvKTQyKyDVefKcyZgEQEiaGYIGDkBNRhWpu9d2OS"];
 let leaderboardArray = [];
 
-
-
-//Main Script
+// Main Script
 client.login(process.env.DISCORD_TOKEN);
-client.on("ready", () => console.log("Bot Started!"));
+client.on("ready", main);
 client.on("message", messageEvent);
 
 // Functions
-async function messageEvent(msg) {
+function messageEvent(msg) {
 	if(msg.content.substring(0, 4) === "KEY="){
 		let providedKey = msg.content.substring(4);
 		checkApiKey(providedKey).then(() => {
@@ -32,21 +30,24 @@ async function messageEvent(msg) {
 	}
 }
 
-function main(){
+async function main() {
 
-	const channel = await client.channels.fetch("831148754181816351");
-	let message = await channel.messages.fetch("831189816040357898");
+	let channel = await client.channels.fetch("831148754181816351").catch(() => console.log("Failed to retrieve ranking leaderboard channel"));
+	let message = await channel.messages.fetch("831189816040357898").catch(() => console.log("Failed to retrieve ranking leaderboard message from leaderboard channel"));
 
-	let leaderboard = "";
 	while(true) {
-
 		leaderboard = "";
 		leaderboardArray = [];
 		leaderboard += "Congratulations to everyone for ranking up. Summer just started, we all got no life so I don't expect anyone to be travelin... That said, Goodluck and Have fun on the rift!! :)\n\n";
 
 		// Adding ranks to leaderboard
 		for(let i = 0; i < names.length; i++){
-			let player = await getRank(usernames[i]);
+			let player = await getRank(usernames[i]).catch();
+			if(typeof player == "undefined"){
+				i = -1;
+				sleep(5000);
+				continue;
+			}
 			let mmr = rankToMMR(player.tier, player.rank, player.lp);
 			let name = names[i];
 			leaderboardArray.push({name, player, mmr});
@@ -78,9 +79,9 @@ function main(){
 
 		leaderboard += `Next Update: ${day}/${month}/${year} ${hours}:${minutes} UTC`;
 
-
 		//Updating the discord leaderboard message
-		await message.edit(leaderboard);
+		await message.edit(leaderboard).catch(() => console.log("Failed to update discord leaderboard message"));
+
 		sleep(300000);
 	}
 
@@ -157,24 +158,39 @@ function rankToMMR(tier, rank, lp){
 
 
 
-async function getRank(puuid){
-	let playerData;
-	if(puuid == "kpDMq3qrUAZkPy3IVd-s2urPQyKsIHZot_MF8qeQJznatFr7"){
-		playerData = await fetch("https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY);
-	}else{
-		playerData = await fetch("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY);
-	}
-
-	let data = await playerData.json();
-	if(isNaN(data.length)) return;
-	for(let i = 0; i < data.length; i++){
-		if(data[i].queueType == "RANKED_SOLO_5x5"){
-			let tier = data[i].tier.toLowerCase();
-			let rank = data[i].rank;
-			let lp = data[i].leaguePoints;
-			return {tier, rank, lp};
+function getRank(puuid){
+	return new Promise((resolve, reject) => {
+		if (puuid == "kpDMq3qrUAZkPy3IVd-s2urPQyKsIHZot_MF8qeQJznatFr7") {
+			fetch("https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY)
+			.then(playerData => playerData.json())
+			.then(data => {
+				if (isNaN(data.length)) reject();
+				for (let i = 0; i < data.length; i++) {
+					if (data[i].queueType == "RANKED_SOLO_5x5") {
+						let tier = data[i].tier.toLowerCase();
+						let rank = data[i].rank;
+						let lp = data[i].leaguePoints;
+						resolve({ tier, rank, lp });
+					}
+				}
+			}).catch(() => console.log("Failed to get NA rank of player"));
+		} else {
+			fetch("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY)
+			.then(playerData => playerData.json())
+			.then(data => {
+				if(isNaN(data.length)) reject();
+				for (let i = 0; i < data.length; i++) {
+					if (data[i].queueType == "RANKED_SOLO_5x5") {
+						let tier = data[i].tier.toLowerCase();
+						let rank = data[i].rank;
+						let lp = data[i].leaguePoints;
+						resolve({ tier, rank, lp });
+					}
+				}
+			}).catch(() => console.log("Failed to get EUW rank of player"));
 		}
-	}
+	});
+	
 }
 
 function sleep(delay) {
