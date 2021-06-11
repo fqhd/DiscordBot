@@ -1,21 +1,17 @@
 //Requirements
 require("dotenv").config();
-const express = require("express");
 const fetch = require("node-fetch");
 const Discord = require("discord.js");
 const client = new Discord.Client();
 
 // Global Variables
 let RIOT_KEY;
-let channel;
 let message;
 let names = ["Fahd", "Amine", "Omar", "Mehdi", "Samar", "Yahia", "Sarah", "Axed", "Imane", "Jihwan"];
 let usernames = ["9JlZKTcvMO_XU2IBV-uvTyg65cN7Oghn0BrLP2JCS-SdQiq9", "kmIMD61kpFj__vdcmkFmWRTO3Y4iTcdo8v9RM8wT5r3oarmV", "sZSQ7WVlb8PjS1DVSLp8-qaQ15b2-yjWPrGWXJcRSzEBmPF4", "OYzdKBrBZlppkK0z7QAPUHV7Bz1znrLhD2k_Im4eTYFNdFuB", "GQG72tn5Ap1mrhn-LOqj6LyE56iCbIMeji9qTDCxqJ_Z2SUb", "001gvTdfRTfrToRzGEk-sr4M1p1u70A4cTR1zhTIwNn8QdVD", "FI5IP0jcSLuwHxaSZH-dJSNRLC2m65VurjA-LB57Pg8W1-wU", "3D_wRaLbvZS19lw8GD38C-X2VzGPnU8TaWWJmkWlNPlPaNaQ", "kpDMq3qrUAZkPy3IVd-s2urPQyKsIHZot_MF8qeQJznatFr7", "w6-mWOTSRvKTQyKyDVefKcyZgEQEiaGYIGDkBNRhWpu9d2OS"];
 let leaderboardArray = [];
 
 // Main Script
-const app = express();
-app.listen(process.env.PORT, () => console.log("Starting server on port: " + process.env.PORT));
 client.login(process.env.DISCORD_TOKEN);
 client.on("ready", () => {
 	init();
@@ -24,27 +20,35 @@ client.on("ready", () => {
 client.on("message", messageEvent);
 
 // Functions
-async function messageEvent(msg) {
+function messageEvent(msg) {
 	if(msg.content.substring(0, 4) === "KEY="){
 		let providedKey = msg.content.substring(4);
-		let validation = await checkApiKey(providedKey).catch(() => console.log("Failed to verify API Key"));
-		if(validation){
+		checkApiKey(providedKey).then(() => {
 			// API Key is valid
 			RIOT_KEY = providedKey;
 			msg.channel.send("Successfully Updated API Key");
-		} else {
+		}).catch(() => {
 			// API Key is not valid
 			msg.channel.send("Invalid API Key Provided");
-		}
-	} else if (msg.content.substring(0, 4) === "Update" && msg.channel.id == "831148754181816351") {
-		updateLeaderboard();
+		});
+	} else if (msg.content === "_update") {
+		console.log("Updating Leaderboard");
 		msg.delete();
+		updateLeaderboard();
+	} else if (msg.content === "_stop"){
+		console.log("Stopping Bot...");
+		msg.delete();
+		client.destroy();
 	}
 }
 
-async function init(){
-	channel = await client.channels.fetch("831148754181816351").catch(() => console.log("Failed to retrieve ranking leaderboard channel"));
-	message = await channel.messages.fetch("831189816040357898").catch(() => console.log("Failed to retrieve ranking leaderboard message from leaderboard channel"));
+function init(){
+	client.channels.fetch("831148754181816351")
+		.then(channel => channel.messages.fetch("831189816040357898")
+			.then(msg => message = msg)
+		.catch(() => console.log("Failed to get leaderboard message in channel")))
+	.catch(() => console.log("Failed to get leaderboard channel"));
+	
 }
 
 async function updateLeaderboard() {
@@ -54,13 +58,18 @@ async function updateLeaderboard() {
 
 	// Adding ranks to leaderboard
 	for(let i = 0; i < names.length; i++){
-		let player = await getRank(usernames[i]).catch(function(){});
-		if(typeof player == "undefined"){
+		console.log("starting serach");
+		let player = await getRank(usernames[i]).catch(() => {
+			// Failed to get rank of player
+
+			console.log("Failed to get rank of player: " + names[i]);
 			return;
-		}
+		});
+		console.log("finished search...");
+
 		let mmr = rankToMMR(player.tier, player.rank, player.lp);
 		let name = names[i];
-		leaderboardArray.push({name, player, mmr});
+		leaderboardArray.push({ name, player, mmr });
 		sleep(1000);
 	}
 
@@ -76,15 +85,8 @@ async function updateLeaderboard() {
 	// Adding date and time to leaderboard
 	leaderboard += "\n";
 
-
-	if(parseInt(minutes) < 10){
-		minutes = "0" + minutes;
-	}
-
-	leaderboard += `Next Update: ${day}/${month}/${year} ${hours}:${minutes} UTC`;
-
-	//Updating the discord leaderboard message
-	await message.edit(leaderboard).catch(() => console.log("Failed to update discord leaderboard message"));
+	// Updating the discord leaderboard message
+	message.edit(leaderboard).catch(() => console.log("Failed to update discord leaderboard message"));
 }
 
 function checkApiKey(key){
