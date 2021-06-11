@@ -82,6 +82,8 @@ async function updateLeaderboard() {
 	// Adding date and time to leaderboard
 	leaderboard += "\n";
 
+	leaderboard += "Last Updated: " + Date();
+
 	// Updating the discord leaderboard message
 	leaderboardMessage.edit(leaderboard).catch(() => console.log("Failed to update discord leaderboard message"));
 	logMessage.edit("Leaderboard Updated!").catch(() => console.log("Failed to update leaderboard"));
