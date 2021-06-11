@@ -65,11 +65,11 @@ async function updateLeaderboard() {
 		let player = await getRank(usernames[i]).catch(() => {
 			logMessage.edit("Failed to update leaderboard").catch(() => console.log("Failed to update log message"));
 		});
-
+		console.log("updates statement");
 		let mmr = rankToMMR(player.tier, player.rank, player.lp);
 		let name = names[i];
 		leaderboardArray.push({ name, player, mmr });
-		sleep(1000);
+		sleep(150);
 	}
 
 	// Sorting the array
