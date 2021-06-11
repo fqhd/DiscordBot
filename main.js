@@ -7,6 +7,8 @@ const client = new Discord.Client();
 
 // Global Variables
 let RIOT_KEY;
+let channel;
+let message;
 let names = ["Fahd", "Amine", "Omar", "Mehdi", "Samar", "Yahia", "Sarah", "Axed", "Imane", "Jihwan"];
 let usernames = ["9JlZKTcvMO_XU2IBV-uvTyg65cN7Oghn0BrLP2JCS-SdQiq9", "kmIMD61kpFj__vdcmkFmWRTO3Y4iTcdo8v9RM8wT5r3oarmV", "sZSQ7WVlb8PjS1DVSLp8-qaQ15b2-yjWPrGWXJcRSzEBmPF4", "OYzdKBrBZlppkK0z7QAPUHV7Bz1znrLhD2k_Im4eTYFNdFuB", "GQG72tn5Ap1mrhn-LOqj6LyE56iCbIMeji9qTDCxqJ_Z2SUb", "001gvTdfRTfrToRzGEk-sr4M1p1u70A4cTR1zhTIwNn8QdVD", "FI5IP0jcSLuwHxaSZH-dJSNRLC2m65VurjA-LB57Pg8W1-wU", "3D_wRaLbvZS19lw8GD38C-X2VzGPnU8TaWWJmkWlNPlPaNaQ", "kpDMq3qrUAZkPy3IVd-s2urPQyKsIHZot_MF8qeQJznatFr7", "w6-mWOTSRvKTQyKyDVefKcyZgEQEiaGYIGDkBNRhWpu9d2OS"];
 let leaderboardArray = [];
@@ -15,77 +17,74 @@ let leaderboardArray = [];
 const app = express();
 app.listen(process.env.PORT, () => console.log("Starting server on port: " + process.env.PORT));
 client.login(process.env.DISCORD_TOKEN);
-client.on("ready", main);
+client.on("ready", () => {
+	init();
+	console.log("Bot Started!");
+});
 client.on("message", messageEvent);
 
 // Functions
-function messageEvent(msg) {
+async function messageEvent(msg) {
 	if(msg.content.substring(0, 4) === "KEY="){
 		let providedKey = msg.content.substring(4);
-		checkApiKey(providedKey).then(() => {
+		let validation = await checkApiKey(providedKey).catch(() => console.log("Failed to verify API Key"));
+		if(validation){
+			// API Key is valid
 			RIOT_KEY = providedKey;
 			msg.channel.send("Successfully Updated API Key");
-		}).catch(() => {
+		} else {
+			// API Key is not valid
 			msg.channel.send("Invalid API Key Provided");
-		});
+		}
+	} else if (msg.content.substring(0, 4) === "Update" && msg.channel.id == "831148754181816351") {
+		updateLeaderboard();
+		msg.delete();
 	}
 }
 
-async function main() {
+async function init(){
+	channel = await client.channels.fetch("831148754181816351").catch(() => console.log("Failed to retrieve ranking leaderboard channel"));
+	message = await channel.messages.fetch("831189816040357898").catch(() => console.log("Failed to retrieve ranking leaderboard message from leaderboard channel"));
+}
 
-	let channel = await client.channels.fetch("831148754181816351").catch(() => console.log("Failed to retrieve ranking leaderboard channel"));
-	let message = await channel.messages.fetch("831189816040357898").catch(() => console.log("Failed to retrieve ranking leaderboard message from leaderboard channel"));
+async function updateLeaderboard() {
+	leaderboard = "";
+	leaderboardArray = [];
+	leaderboard += "Congratulations to everyone for ranking up. Summer just started, we all got no life so I don't expect anyone to be travelin... That said, Goodluck and Have fun on the rift!! :)\n\n";
 
-	while(true) {
-		leaderboard = "";
-		leaderboardArray = [];
-		leaderboard += "Congratulations to everyone for ranking up. Summer just started, we all got no life so I don't expect anyone to be travelin... That said, Goodluck and Have fun on the rift!! :)\n\n";
-
-		// Adding ranks to leaderboard
-		for(let i = 0; i < names.length; i++){
-			let player = await getRank(usernames[i]).catch(function(){});
-			if(typeof player == "undefined"){
-				i = -1;
-				sleep(5000);
-				continue;
-			}
-			let mmr = rankToMMR(player.tier, player.rank, player.lp);
-			let name = names[i];
-			leaderboardArray.push({name, player, mmr});
-			sleep(1000);
+	// Adding ranks to leaderboard
+	for(let i = 0; i < names.length; i++){
+		let player = await getRank(usernames[i]).catch(function(){});
+		if(typeof player == "undefined"){
+			return;
 		}
-
-		// Sorting the array
-		leaderboardArray.sort(compare);
-
-		// Updating leaderboard with sorted array of ranks
-		for(let i = 0; i < leaderboardArray.length; i++){
-			let player = leaderboardArray[i].player;
-			leaderboard += (i + 1) + ") " + leaderboardArray[i].name + " " + player.tier + " " + player.rank + " " + player.lp + " LP" + "\n";
-		}
-
-		// Adding date and time to leaderboard
-		leaderboard += "\n";
-
-		const date =  new Date(new Date().getTime() + 5 * 60000);
-		const day = date.getDate();
-		const month = date.getMonth();
-		const year = date.getFullYear();
-		const hours = date.getHours();
-		let minutes = date.getMinutes();
-
-		if(parseInt(minutes) < 10){
-			minutes = "0" + minutes;
-		}
-
-		leaderboard += `Next Update: ${day}/${month}/${year} ${hours}:${minutes} UTC`;
-
-		//Updating the discord leaderboard message
-		await message.edit(leaderboard).catch(() => console.log("Failed to update discord leaderboard message"));
-
-		sleep(300000);
+		let mmr = rankToMMR(player.tier, player.rank, player.lp);
+		let name = names[i];
+		leaderboardArray.push({name, player, mmr});
+		sleep(1000);
 	}
 
+	// Sorting the array
+	leaderboardArray.sort(compare);
+
+	// Updating leaderboard with sorted array of ranks
+	for(let i = 0; i < leaderboardArray.length; i++){
+		let player = leaderboardArray[i].player;
+		leaderboard += (i + 1) + ") " + leaderboardArray[i].name + " " + player.tier + " " + player.rank + " " + player.lp + " LP" + "\n";
+	}
+
+	// Adding date and time to leaderboard
+	leaderboard += "\n";
+
+
+	if(parseInt(minutes) < 10){
+		minutes = "0" + minutes;
+	}
+
+	leaderboard += `Next Update: ${day}/${month}/${year} ${hours}:${minutes} UTC`;
+
+	//Updating the discord leaderboard message
+	await message.edit(leaderboard).catch(() => console.log("Failed to update discord leaderboard message"));
 }
 
 function checkApiKey(key){
