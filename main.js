@@ -14,8 +14,8 @@ let leaderboardArray = [];
 
 // Main Script
 client.login(process.env.DISCORD_TOKEN);
-client.on("ready", () => {
-	init();
+client.on("ready", async () => {
+	await init();
 	console.log("Bot Started!");
 });
 client.on("message", messageEvent);
@@ -24,17 +24,19 @@ client.on("message", messageEvent);
 async function messageEvent(msg) {
 	if(msg.content.substring(0, 4) === "KEY="){
 		let providedKey = msg.content.substring(4);
-		checkApiKey(providedKey).then(() => {
+		let validity = await checkApiKey(providedKey);
+		if(validity == true){
 			// API Key is valid
 			RIOT_KEY = providedKey;
 			msg.channel.send("Successfully Updated API Key");
-		}).catch(() => {
+		} else {
 			// API Key is not valid
 			msg.channel.send("Invalid API Key Provided");
-		});
+		}
+		
 	} else if (msg.content === "_update") {
 		console.log("Updating Leaderboard");
-		msg.delete();
+		msg.delete().catch(err => console.log(err));
 		updateLeaderboard();
 	} else if (msg.content === "_stop"){
 		console.log("Stopping Bot...");
@@ -44,16 +46,19 @@ async function messageEvent(msg) {
 }
 
 async function init(){
-	let channel = await client.channels.fetch("831148754181816351").catch(() => console.log("Failed to get leaderboard channel"));
+	try {
+		let channel = await client.channels.fetch("831148754181816351");
 
-	// Messages
-	leaderboardMessage = await channel.messages.fetch("831189816040357898").catch(() => console.log("Failed to get leaderboard message"));
-	logMessage = await channel.messages.fetch("852929017945522258").catch(() => console.log("Failed to get log message"));
+		// Messages
+		leaderboardMessage = await channel.messages.fetch("831189816040357898");
+		logMessage = await channel.messages.fetch("852929017945522258");
+	}catch(err){
+		console.log(err);
+	}
 }
 
 async function updateLeaderboard() {
-
-	logMessage.edit("Updating Leaderboard...").catch(() => console.log("Failed to update log message"));
+	await logMessage.edit("Updating Leaderboard...").catch("Failed to update log message");
 
 	leaderboard = "";
 	leaderboardArray = [];
@@ -61,9 +66,12 @@ async function updateLeaderboard() {
 
 	// Adding ranks to leaderboard
 	for(let i = 0; i < names.length; i++){
-		let player = await getRank(usernames[i]).catch(() => {
-			logMessage.edit("Failed to update leaderboard").catch(() => console.log("Failed to update log message"));
-		});
+		let player = await getRank(usernames[i]);
+		if(player == null){
+			await logMessage.edit("Failed to update leaderboard").catch("Failed to update log message");
+			console.log("Failed to update leaderboard");
+			return; // There was an error in the getRank() function, so we exit the function
+		}
 		let mmr = rankToMMR(player.tier, player.rank, player.lp);
 		let name = names[i];
 		leaderboardArray.push({ name, player, mmr });
@@ -85,22 +93,23 @@ async function updateLeaderboard() {
 	leaderboard += "Last Updated: " + Date();
 
 	// Updating the discord leaderboard message
-	leaderboardMessage.edit(leaderboard).catch(() => console.log("Failed to update discord leaderboard message"));
-	logMessage.edit("Leaderboard Updated!").catch(() => console.log("Failed to update leaderboard"));
+	await leaderboardMessage.edit(leaderboard).catch("Failed to update leaderboard message");
+	await logMessage.edit("Leaderboard Updated!").catch("Failed to update log message");
 }
+	
 
-function checkApiKey(key){
-	return new Promise((resolve, reject) => {
-		fetch("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + usernames[0] + "?api_key=" + key).then(response => {
-			if(response.status == 200){
-				resolve();
-			}else{
-				reject();
-			}
-		}).catch(() => {
-			console.log("Failed to get response code");
-		});
-	});
+async function checkApiKey(key){
+	try {
+		let response = await fetch("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + usernames[0] + "?api_key=" + key);
+		if(response.status == 200){
+			return true;
+		}else{
+			return false;
+		}
+	}catch(err){
+		console.log(err);
+		return null;
+	}
 }
 
 function compare(a, b){
@@ -160,39 +169,35 @@ function rankToMMR(tier, rank, lp){
 
 
 
-function getRank(puuid){
-	return new Promise((resolve, reject) => {
+async function getRank(puuid){
+	try {
 		if (puuid == "kpDMq3qrUAZkPy3IVd-s2urPQyKsIHZot_MF8qeQJznatFr7") {
-			fetch("https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY)
-			.then(playerData => playerData.json())
-			.then(data => {
-				if (isNaN(data.length)) reject();
-				for (let i = 0; i < data.length; i++) {
-					if (data[i].queueType == "RANKED_SOLO_5x5") {
-						let tier = data[i].tier.toLowerCase();
-						let rank = data[i].rank;
-						let lp = data[i].leaguePoints;
-						resolve({ tier, rank, lp });
-					}
+			let response = await fetch("https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY);
+			let data = await response.json();
+			for (let i = 0; i < data.length; i++) {
+				if (data[i].queueType == "RANKED_SOLO_5x5") {
+					let tier = data[i].tier.toLowerCase();
+					let rank = data[i].rank;
+					let lp = data[i].leaguePoints;
+					return { tier, rank, lp };
 				}
-			}).catch(() => console.log("Failed to get NA rank of player"));
+			}
 		} else {
-			fetch("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY)
-			.then(playerData => playerData.json())
-			.then(data => {
-				if(isNaN(data.length)) reject();
-				for (let i = 0; i < data.length; i++) {
-					if (data[i].queueType == "RANKED_SOLO_5x5") {
-						let tier = data[i].tier.toLowerCase();
-						let rank = data[i].rank;
-						let lp = data[i].leaguePoints;
-						resolve({ tier, rank, lp });
-					}
+			let response = await fetch("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + puuid + "?api_key=" + RIOT_KEY);
+			let data = await response.json();
+			for (let i = 0; i < data.length; i++) {
+				if (data[i].queueType == "RANKED_SOLO_5x5") {
+					let tier = data[i].tier.toLowerCase();
+					let rank = data[i].rank;
+					let lp = data[i].leaguePoints;
+					return { tier, rank, lp };
 				}
-			}).catch(() => console.log("Failed to get EUW rank of player"));
+			}
 		}
-	});
-	
+	}catch(err){
+		console.log(err);
+		return null;
+	}
 }
 
 function sleep(delay) {
