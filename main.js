@@ -3,6 +3,7 @@ require("dotenv").config();
 const fetch = require("node-fetch");
 const Discord = require("discord.js");
 const client = new Discord.Client();
+const commandHandler = require("./commands");
 
 // Global Variables
 let leaderboardMessage;
@@ -15,22 +16,9 @@ const RIOT_KEY = process.env.RIOT_KEY;
 
 // Main Script
 client.login(DISCORD_TOKEN);
-client.on("ready", init);
-client.on("message", messageEntered);
+client.once("ready", init);
+client.on('message', commandHandler);
 
-async function messageEntered(message){
-	if(message.channel.id == "831148754181816351"){
-		// Process the message
-		if(message.content == "_stop"){
-			console.log("Stopping bot...");
-			await message.delete();
-			client.destroy();
-		}else if(message.content == "_update"){
-			await message.delete();
-			updateLeaderboard();
-		}
-	}
-}
 
 async function init(){
 	try {
