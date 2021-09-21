@@ -3,11 +3,7 @@ let client;
 
 const commands = { 
 	update: updateLeaderboard,
-	stop: function (_client){
-		console.log("Stopping Bot...");
-		_client.destroy();
-	}
- };
+};
 
 async function messageEntered (message){
 	if(message.channel.id == '831148754181816351'){ // Ranking Leaderboard channel
@@ -20,9 +16,6 @@ async function messageEntered (message){
 		let command = tokens.shift();
 		if(command.charAt(0) === '_'){
 			command = command.substring(1);
-			console.log('Command: ' + command);
-			console.log('Tokens: '+ tokens);
-
 			try{
 				commands[command](client);
 			}catch(err){
